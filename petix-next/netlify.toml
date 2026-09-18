@@ -1,0 +1,46 @@
+# ─── netlify.toml ─────────────────────────────────────────────────────────────
+#  PetixOps — Next.js (App Router)
+#  Antes era site estático sem build; agora usa o Netlify Next.js Runtime.
+# ──────────────────────────────────────────────────────────────────────────────
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# CSP revisada para a nova stack:
+# - PDF.js, Tesseract.js, PDF-lib, JSZip e XLSX agora são bundlados via npm
+#   (script-src não precisa mais de unpkg/cdnjs/jsdelivr para eles).
+# - Fontes (DM Sans, JetBrains Mono) são self-hosted via next/font
+#   (font-src/style-src não precisam mais de fonts.googleapis.com/gstatic.com).
+# - worker-src cobre os Web Workers do PDF.js/Tesseract.js, agora servidos
+#   da própria origem (blob: para os workers instanciados dinamicamente).
+# - Mantive cdn.lordicon.com comentado: só é necessário se decidirmos manter
+#   o <lord-icon> do estado vazio da Consulta (ver checklist, etapa Consulta).
+# - 'unsafe-inline' em style-src permanece por causa de estilos inline que o
+#   Radix UI aplica para posicionamento (Dialog/Tooltip/Sheet); dá para
+#   endurecer depois com nonces se quisermos.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; connect-src 'self' https://*.googleapis.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://tessdata.projectnaptha.com; media-src 'self' blob:; worker-src 'self' blob:; frame-src https://accounts.google.com;"
+    # https://tessdata.projectnaptha.com foi adicionado ao connect-src porque
+    # o Tesseract.js baixa o modelo treinado de OCR em português (~10MB) de
+    # lá em tempo de execução, mesmo instalado via npm — não tem como
+    # self-hostar isso sem um passo de build extra. Se quiser eliminar essa
+    # origem externa da CSP, dá para hospedar o .traineddata em /public e
+    # apontar Tesseract.createWorker({ langPath: '/tessdata' }); posso fazer
+    # isso se preferir.
+    # Removi https://<seu-projeto>.firebaseapp.com do frame-src original:
+    # login anônimo não abre popup/iframe do Firebase Auth. Se algum outro
+    # fluxo (ex: login com Google) ainda depender disso, me avise antes do
+    # deploy que eu devolvo essa origem.
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy        = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
