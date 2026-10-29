@@ -38,21 +38,22 @@
 }
 
 .light {
-  --background: #f7f7f8;
-  --background-subtle: #efeff1;
-  --surface: #ffffff;
-  --surface-raised: #fafafa;
-  --foreground: #18181b;
-  --muted-foreground: #52525b;
-  --faint-foreground: #8b8b96;
-  --border: #e4e4e7;
-  --border-strong: #c4c4cc;
+  /* Paleta natalina (tema claro) */
+  --background: #f4f7fc;
+  --background-subtle: #ffffff; /* menu lateral */
+  --surface: #ffffff; /* cards e métricas */
+  --surface-raised: #f8fafd;
+  --foreground: #172b4d;
+  --muted-foreground: #64748b;
+  --faint-foreground: #8593a8;
+  --border: #d6e0ef;
+  --border-strong: #b6c7e0;
 
-  --accent: #15803d;
+  --accent: #0057d9;
   --accent-foreground: #ffffff;
-  --accent-dim: rgba(21, 128, 61, 0.1);
-  --accent-dim-2: rgba(21, 128, 61, 0.05);
-  --accent-text: #15803d;
+  --accent-dim: #e7f0ff; /* item selecionado */
+  --accent-dim-2: rgba(0, 87, 217, 0.05);
+  --accent-text: #0057d9;
 
   --status-green: #15803d;
   --status-amber: #b45309;
